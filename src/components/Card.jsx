@@ -1,3 +1,4 @@
+import currency from "currency.js";
 import React from "react";
 
 function Card({ product }) {
@@ -11,9 +12,23 @@ function Card({ product }) {
             </div>
             <div className="card-body">
               <h3 className="card-title text-center">{product.name}</h3>
-              <div className="d-flex justify-content-around align-item-center p-2">
-                <p className="card-price-sale">{product.salePrice}</p>
-                <p className="card-price">{product.price}</p>
+              <div className="d-flex gap-3 py-3 align-item-center">
+                <p className="card-price-sale">
+                  {currency(product.salePrice, {
+                    symbol: "",
+                    separator: ".",
+                    precision: 0,
+                    pattern: `# !`,
+                  }).format()}
+                </p>
+                <p className="card-price" style={{ fontSize: "14px" }}>
+                  {currency(product.price, {
+                    symbol: "",
+                    separator: ".",
+                    precision: 0,
+                    pattern: `# !`,
+                  }).format()}
+                </p>
               </div>
               <a
                 href="/detail"
