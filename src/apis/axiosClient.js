@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: "http://api-smartphone-nu.vercel.app",
+  baseURL: "https://api-smartphone-nu.vercel.app",
   timeout: 1000,
   headers: {
     "Content-Type": "application/json",
