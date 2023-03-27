@@ -1,10 +1,18 @@
 import currency from "currency.js";
 import React from "react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../reducers/cartSlice";
 
 function Card({ product }) {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = (product) => {
+    dispatch(addToCart({ product, quantity: 1 }));
+  };
+
   return (
     <div>
-      {product.image && (
+      {product && (
         <div className="col position-relative">
           <div className="card card-content rounded-4">
             <div className="card-header">
@@ -30,13 +38,13 @@ function Card({ product }) {
                   }).format()}
                 </p>
               </div>
-              <a
-                href="/detail"
+              <button
                 className="btn btn-danger position-absolute"
                 style={{ left: 0, bottom: 0, width: "100%" }}
+                onClick={() => handleAddToCart(product)}
               >
                 Thêm vào giỏ hàng
-              </a>
+              </button>
             </div>
           </div>
         </div>

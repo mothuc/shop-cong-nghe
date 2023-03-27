@@ -1,13 +1,21 @@
-import Footer from "./components/Footer";
+import { Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
+import Payment from "./components/Payment";
+import CartPage from "./pages/CartPage";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 function App() {
   return (
     <div>
       <Header />
-      <Home />
-      <Footer />
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/cart/payment" element={<Payment />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
     </div>
   );
 }

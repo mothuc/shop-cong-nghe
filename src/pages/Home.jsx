@@ -1,12 +1,13 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { getAllProducts } from "../apis/getAllProduct";
+import { getProductFiltered } from "../apis/getProductFiltered";
 import Filter from "../components/Filter";
 
 import ListsProduct from "../components/ListsProduct";
 
 function Home() {
   const [productList, setProductList] = useState([]);
-  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("all");
 
   // setSearchKeyword(keyword);
   // https://api-smartphone-nu.vercel.app/products?q=iPhone
@@ -14,18 +15,21 @@ function Home() {
   //Để tìm kiếm sản phẩm theo từ khóa, ta sử dụng http://localhost:3000/products?q={searchTerm}.
 
   useEffect(() => {
-    let url = "http://api-smartphone-nu.vercel.app/products";
-
-    if (selectedBrand === "all") {
-      url = "http://api-smartphone-nu.vercel.app/products";
-    } else if (selectedBrand !== "") {
-      url = `http://api-smartphone-nu.vercel.app/products?name_like=${selectedBrand}`;
-    }
-    axios
-      .get(url)
-      .then((response) => setProductList(response.data))
-      .catch((error) => console.log(error));
+    (async () => {
+      try {
+        if (selectedBrand === "all") {
+          const data = await getAllProducts.getAll();
+          setProductList(data);
+        } else {
+          const data = await getProductFiltered.getFiltered(selectedBrand);
+          setProductList(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
   }, [selectedBrand]);
+
   console.log(productList);
 
   const handleFilter = (childData) => {
