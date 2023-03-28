@@ -3,6 +3,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { removeFromCart, updateQuantity } from "../reducers/cartSlice";
+import { v4 as uuidv4 } from "uuid";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -28,7 +29,7 @@ function CartPage() {
     <div className="container p-4 mb-4">
       <h2>Giỏ hàng</h2>
       {cartProducts.map((product) => (
-        <div>
+        <div key={uuidv4()}>
           <div className="row mt-4">
             <img className="col-2" width={"100%"} src={product.image} alt="" />
             <div className="col-8">

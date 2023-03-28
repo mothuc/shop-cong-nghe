@@ -7,7 +7,7 @@ import Login from "./pages/Login";
 
 function App() {
   return (
-    <div>
+    <>
       <Header />
 
       <Routes>
@@ -16,7 +16,7 @@ function App() {
         <Route path="/cart/payment" element={<Payment />} />
         <Route path="/login" element={<Login />} />
       </Routes>
-    </div>
+    </>
   );
 }
 
