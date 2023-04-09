@@ -4,10 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { removeFromCart, updateQuantity } from "../reducers/cartSlice";
 import { v4 as uuidv4 } from "uuid";
+import { auth } from "../firebase";
 
 function CartPage() {
   const dispatch = useDispatch();
-  const cartProducts = useSelector((state) => state.cart.products);
+
+  const reduxStore = useSelector((state) => state);
+  const cartProducts = reduxStore.cart.products;
   const totalCost = useSelector((state) => state.cart.totalCost);
 
   const handleMinusItem = (product) => {
@@ -31,8 +34,8 @@ function CartPage() {
       {cartProducts.map((product) => (
         <div key={uuidv4()}>
           <div className="row mt-4">
-            <img className="col-2" width={"100%"} src={product.image} alt="" />
-            <div className="col-8">
+            <img className="col-3" width={"100%"} src={product.image} alt="" />
+            <div className="col">
               <p>{product.name}</p>
               <div className="d-flex gap-4">
                 <p className="card-price-sale">
@@ -53,7 +56,7 @@ function CartPage() {
                 </p>
               </div>
             </div>
-            <div className="col-2">
+            <div className="col-3">
               <div className="row  gx-2">
                 <button
                   onClick={() => handleMinusItem(product)}
@@ -106,7 +109,7 @@ function CartPage() {
           }).format()}
         </p>
       )}
-      <Link className="link" to={"/cart/payment"}>
+      <Link className="link" to={!auth.currentUser ? "/register" : "/payment"}>
         <button className="btn bg-danger float-end">Đặt hàng</button>
       </Link>
     </div>

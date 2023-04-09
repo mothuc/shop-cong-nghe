@@ -1,12 +1,16 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../reducers/authSlice";
+import { doc, setDoc } from "firebase/firestore";
+
+import store from "../reducers/store";
 
 function Register() {
+  const storeRedux = store.getState();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {
@@ -15,15 +19,34 @@ function Register() {
     formState: { errors },
   } = useForm();
 
+  console.log(storeRedux);
+
   const onSubmit = (data) => {
-    signInWithEmailAndPassword(auth, data.email, data.password)
+    const email = data.email;
+    const fullname = data.fullname;
+
+    //Register user account with email and password
+    createUserWithEmailAndPassword(auth, data.email, data.password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        user.displayName = data.fullname;
-        dispatch(login({ user }));
+        user.displayName = fullname;
         console.log(user);
-        navigate("/profile");
+
+        updateProfile(user, {
+          displayName: fullname,
+        });
+
+        dispatch(login({ user }));
+
+        //Create user on firestore
+        setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email,
+          fullname,
+        });
+
+        navigate("/");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -34,10 +57,23 @@ function Register() {
   return (
     <div className="container mt-3 p-4">
       <div className="text-center">
-        <h2>Đăng nhập</h2>
+        <h2>Đăng ký</h2>
       </div>
       <div className="p-4">
         <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-3 mt-3">
+            <label htmlFor="fullname">Họ và tên:</label>
+            <input
+              {...register("fullname", { required: true })}
+              type="text"
+              className="form-control"
+              id="fullname"
+              placeholder="Vui lòng nhập họ và tên"
+              name="fullname"
+            />
+            {errors.fullname && <p className="p-1  text-danger">Vui lòng nhập họ và tên</p>}
+          </div>
+
           <div className="mb-3 mt-3">
             <label htmlFor="email">Email:</label>
             <input
@@ -54,7 +90,7 @@ function Register() {
               placeholder="Vui lòng nhập email"
               name="email"
             />
-            {errors.email && <p className="p-1 text-danger">Email không hợp lệ</p>}
+            {errors.email && <p className="p-1 text-danger">Email không được để trống</p>}
           </div>
           <div className="mb-3">
             <label htmlFor="password">Password:</label>
@@ -72,17 +108,11 @@ function Register() {
               placeholder="Vui lòng nhập mật khẩu"
               name="password"
             />
-            {errors.password && <p className="p-1 text-danger">Sai mật khẩu</p>}
-          </div>
-          <div className="text-center fs-6 p-2">
-            <span>Nếu bạn chưa có tài khoản? </span>
-            <Link to={"/register"} className="link text-dark fw-bold">
-              Đăng ký
-            </Link>
+            {errors.password && <p className="p-1 text-danger">Mật khẩu tối thiểu 8 ký tự</p>}
           </div>
           <div className="text-center">
             <button type="submit" className="btn btn-danger">
-              Đăng nhập
+              Đăng ký
             </button>
           </div>
         </form>

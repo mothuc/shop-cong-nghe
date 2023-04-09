@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 function ListsProduct({ products }) {
   return (
-    <div className="row row-cols-md-5 flex-wrap gy-4">
+    <div className="row row-cols-auto justify-content-around gy-4">
       {products && products.map((product) => <Card product={product} key={uuidv4()} />)}
     </div>
   );

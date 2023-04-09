@@ -7,7 +7,7 @@ function Filter({ parentCallback }) {
   };
 
   return (
-    <div className="p-4 d-flex justify-content-center gap-3">
+    <div className="filter-mobile mb-3 mt-3 d-flex justify-content-center gap-3">
       <button
         value={"all"}
         onClick={handleClickbrand}

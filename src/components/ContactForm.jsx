@@ -1,20 +1,10 @@
 import { updateProfile } from "firebase/auth";
-import { Timestamp, doc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
-import { clearCart } from "../reducers/cartSlice";
 
-function Payment() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
-  const products = cart.products;
-  const totalCost = cart.totalCost;
-  const timestamp = Timestamp.fromDate(new Date()).seconds;
-
+const ContactForm = () => {
   const {
     register,
     handleSubmit,
@@ -22,49 +12,35 @@ function Payment() {
   } = useForm();
 
   const user = auth.currentUser;
-  console.log(user);
 
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     const fullName = data.fullname;
     const email = data.email;
     const phoneNumber = data.phoneNumber;
     const address = data.address;
     console.log(data);
-
-    try {
-      //Update user information
-      await updateProfile(auth.currentUser, {
-        displayName: fullName,
-        phoneNumber: phoneNumber,
+    updateProfile(auth.currentUser, {
+      phoneNumber: phoneNumber,
+    })
+      .then(() => {
+        console.log("Update user infomation successfully");
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      console.log("Update user information done!");
+    const userData = doc(db, "users", user.uid);
 
-      //Update userInfor database
-      const userInforRef = doc(db, "users", user.uid);
-      await updateDoc(userInforRef, {
+    updateDoc(userData, {
+      userInfor: {
         fullName: fullName,
         email: email,
         phoneNumber: phoneNumber,
         address: address,
-      });
-
-      console.log("Update user on database done!");
-      //Create orders
-      await setDoc(doc(db, "orders", user.uid), {
-        orderId: timestamp,
-        products,
-        totalCost,
-      });
-
-      dispatch(clearCart());
-      navigate("/payment/successfully");
-    } catch (error) {
-      console.log(error);
-    }
+      },
+    });
   };
-
   return (
-    <div className="container p-4">
+    <div>
       <h4 className="fw-bolder">Thông tin đặt hàng</h4>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3 mt-3">
@@ -147,6 +123,6 @@ function Payment() {
       </form>
     </div>
   );
-}
+};
 
-export default Payment;
+export default ContactForm;
