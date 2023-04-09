@@ -47,7 +47,7 @@ function OrderInfor() {
         Quay lại
       </button>
       {orderInfor && userInfor && (
-        <div className="rounded-4 p-4" style={{ backgroundColor: "#d4edda" }}>
+        <div className="rounded-4 p-4" style={{ backgroundColor: "#d4edda", with: "60%" }}>
           <h4 className="fw-bold ">ĐẶT HÀNG THÀNH CÔNG</h4>
           <p>
             Mã đơn hàng : <span className="fw-bold">{orderInfor.orderId}</span>{" "}

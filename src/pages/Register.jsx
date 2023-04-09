@@ -1,8 +1,8 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { auth, db } from "../firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login } from "../reducers/authSlice";
 import { doc, setDoc } from "firebase/firestore";
@@ -13,6 +13,7 @@ function Register() {
   const storeRedux = store.getState();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [errorEmail, setErrorEmail] = useState("");
   const {
     register,
     handleSubmit,
@@ -50,8 +51,9 @@ function Register() {
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+        if (errorCode === "auth/email-already-in-use") {
+          setErrorEmail("Tài khoản đã tồn tại.");
+        }
       });
   };
   return (
@@ -91,6 +93,7 @@ function Register() {
               name="email"
             />
             {errors.email && <p className="p-1 text-danger">Email không được để trống</p>}
+            {errorEmail && <p className="p-1 text-danger">{errorEmail}</p>}
           </div>
           <div className="mb-3">
             <label htmlFor="password">Password:</label>
@@ -109,6 +112,12 @@ function Register() {
               name="password"
             />
             {errors.password && <p className="p-1 text-danger">Mật khẩu tối thiểu 8 ký tự</p>}
+          </div>
+          <div className="text-center fs-6 p-2">
+            <span>Nếu bạn đã có tài khoản? </span>
+            <Link to={"/login"} className="link text-dark fw-bold">
+              Đăng nhập
+            </Link>
           </div>
           <div className="text-center">
             <button type="submit" className="btn btn-danger">

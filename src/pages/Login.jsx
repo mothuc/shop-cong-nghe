@@ -1,5 +1,5 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
@@ -9,28 +9,50 @@ import { login } from "../reducers/authSlice";
 function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [error, setError] = useState("");
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        user.displayName = data.fullname;
-        dispatch(login({ user }));
-        console.log(user);
-        navigate("/profile");
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-      });
+  // const onSubmit = (data) => {
+  //   signInWithEmailAndPassword(auth, data.email, data.password)
+  //     .then((userCredential) => {
+  //       // Signed in
+  //       const user = userCredential.user;
+  //       user.displayName = data.fullname;
+  //       dispatch(login({ user }));
+  //       console.log(user);
+  //       navigate("/profile");
+  //     })
+  //     .catch((error) => {
+  //       const errorCode = error.code;
+  //       const errorMessage = error.message;
+  //       console.log(errorCode, errorMessage);
+  //     });
+  // };
+
+  const onSubmit = async (data) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+      user.displayName = data.fullname;
+      dispatch(login({ user }));
+      console.log(user);
+      navigate("/profile");
+    } catch (error) {
+      const errorCode = error.code;
+      console.log(errorCode);
+
+      if (errorCode === "auth/wrong-password") {
+        setError("Mật khẩu không đúng.");
+      } else if (errorCode === "auth/user-not-found") {
+        setError("Tài khoản không tồn tại.");
+      }
+    }
   };
+
   return (
     <div className="container mt-3 p-4">
       <div className="text-center">
@@ -74,12 +96,14 @@ function Register() {
             />
             {errors.password && <p className="p-1 text-danger">Sai mật khẩu</p>}
           </div>
+          {error && <p className="p-1 text-danger fs-6"> {error}</p>}
           <div className="text-center fs-6 p-2">
             <span>Nếu bạn chưa có tài khoản? </span>
             <Link to={"/register"} className="link text-dark fw-bold">
               Đăng ký
             </Link>
           </div>
+
           <div className="text-center">
             <button type="submit" className="btn btn-danger">
               Đăng nhập
